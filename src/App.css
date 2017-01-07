@@ -32,5 +32,34 @@
 .Buttons a {
   color: white;
   text-decoration: none;
-  padding: 0 10px;
+  padding: 5px 10px;
+}
+
+.Input {
+  border: none;
+  background: none;
+  padding: 5px;
+  width: 90px;
+  text-align: center;
+  border-bottom: 1px solid white;
+  color: white;
+  font-size: 18px;
+}
+
+.Input:focus {
+  outline: none;
+}
+
+.Label {
+  margin-right: 20px;
+  vertical-align: bottom;
+}
+
+.InputWrapper {
+  display: inline-block;
+  margin: 5px;
+}
+
+.InputWrapper.Right {
+  float: right;
 }

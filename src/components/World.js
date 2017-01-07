@@ -13,21 +13,39 @@ export default class World extends Component {
     this.pause = this.pause.bind(this);
     this.setNextFrame = this.setNextFrame.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handlePeriodChange = this.handlePeriodChange.bind(this);
+    this.handleRandChange = this.handleRandChange.bind(this);
 
     this.state = {
       map: map,
       lines: lines,
       pause: true,
-      nextFrame: false
+      nextFrame: false,
+      period: this.getPeriod(),
+      rand: this.getRand()
     };
+  }
+
+  getSize() {
+   return this.props.size;
+  }
+
+  getPeriod() {
+   if (this.state && this.state.period) return this.state.period;
+   return this.props.period;
+  }
+
+  getRand() {
+   if (this.state && this.state.rand) return this.state.rand;
+   return this.props.rand;
   }
 
   initMap() {
     var map = []
 
-    for(var y=0; y < this.props.size; y++) {
+    for(var y=0; y < this.getSize(); y++) {
       var line = []
-      for(var x=0; x < this.props.size; x++) {
+      for(var x=0; x < this.getSize(); x++) {
         line.push(false);
       }
       map.push(line)
@@ -49,13 +67,13 @@ export default class World extends Component {
   }
 
   seedMap(map) {
-    map[this.props.size / 2][this.props.size / 2] = true;
-    map[this.props.size / 2 - 2][this.props.size / 2] = true;
-    map[this.props.size / 2 - 2][this.props.size / 2 - 1] = true;
-    map[this.props.size / 2 - 2][this.props.size / 2 + 1] = true;
-    map[this.props.size / 2 + 2][this.props.size / 2] = true;
-    map[this.props.size / 2 + 2][this.props.size / 2 - 1] = true;
-    map[this.props.size / 2 + 2][this.props.size / 2 + 1] = true;
+    map[this.getSize() / 2][this.getSize() / 2] = true;
+    map[this.getSize() / 2 - 2][this.getSize() / 2] = true;
+    map[this.getSize() / 2 - 2][this.getSize() / 2 - 1] = true;
+    map[this.getSize() / 2 - 2][this.getSize() / 2 + 1] = true;
+    map[this.getSize() / 2 + 2][this.getSize() / 2] = true;
+    map[this.getSize() / 2 + 2][this.getSize() / 2 - 1] = true;
+    map[this.getSize() / 2 + 2][this.getSize() / 2 + 1] = true;
   }
 
   generateMap(exMap) {
@@ -69,14 +87,14 @@ export default class World extends Component {
       }
     );
 
-    if (Math.floor(Math.random() * this.props.rand) === 0) {
-      let x = Math.floor(Math.random() * this.props.size);
-      let y = Math.floor(Math.random() * this.props.size);
+    if (Math.floor(Math.random() * this.getRand()) === 0) {
+      let x = Math.floor(Math.random() * this.getSize());
+      let y = Math.floor(Math.random() * this.getSize());
 
       map[y][x] = true;
-      if (x + 1 < this.props.size) map[y][x + 1] = true;
-      if (y + 1 < this.props.size) map[y + 1][x] = true;
-      if (x + 1 < this.props.size && y + 1< this.props.size) map[y + 1][x + 1] = true;
+      if (x + 1 < this.getSize()) map[y][x + 1] = true;
+      if (y + 1 < this.getSize()) map[y + 1][x] = true;
+      if (x + 1 < this.getSize() && y + 1< this.getSize()) map[y + 1][x + 1] = true;
     }
 
     return map;
@@ -108,8 +126,8 @@ export default class World extends Component {
 
     toCheck.map(
       (coords) => {
-        if (coords[0] >= 0 && coords[0] < this.props.size
-          && coords[1] >= 0 && coords[1] < this.props.size) {
+        if (coords[0] >= 0 && coords[0] < this.getSize()
+          && coords[1] >= 0 && coords[1] < this.getSize()) {
           if (map[coords[1]][coords[0]]) n += 1;
         }
         return n;
@@ -122,7 +140,7 @@ export default class World extends Component {
   generateLines(map) {
     var tab = [];
 
-    for(var i=0; i < this.props.size; i++) {
+    for(var i=0; i < this.getSize(); i++) {
       let line = <Line key={i} cells={ map[i] } />;
       tab.push(line);
     }
@@ -160,7 +178,7 @@ export default class World extends Component {
 
   componentDidMount() {
     $(document.body).on('keydown', this.handleKeyDown);
-    this.interval = setInterval(() => this.tick(), this.props.period);
+    this.interval = setInterval(() => this.tick(), this.getPeriod());
   }
 
   componentWillUnmount() {
@@ -180,11 +198,27 @@ export default class World extends Component {
     }
   }
 
+  handlePeriodChange(event) {
+    this.setState({ period: event.target.value });
+  }
+
+  handleRandChange(event) {
+    this.setState({ rand: event.target.value });
+  }
+
   render() {
     return (
       <div>
-        <div className='World'>{ this.state.lines }</div>
+        <div className='InputWrapper'>
+          <label className='Label' htmlFor='period'>Period:</label>
+          <input className='Input' type='number' id='period' value={this.getPeriod()} onChange={this.handlePeriodChange} />
+        </div>
+        <div className='InputWrapper Right'>
+          <label className='Label' htmlFor='rand'>Rand:</label>
+          <input className='Input Right' type='number' id='rand' value={this.getRand()} onChange={this.handleRandChange} />
+        </div>
         <br/>
+        <div className='World'>{ this.state.lines }</div>
         <div className='Buttons'>
           <a href='#' className='fa fa-step-backward' onClick={ this.resetMap } ></a>
           <a href='#' className={'fa ' + this.pauseIcon() } onClick={ this.pause } ></a>
