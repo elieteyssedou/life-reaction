@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
 import Line from './Line';
 
 export default class World extends Component {
@@ -10,11 +11,14 @@ export default class World extends Component {
 
     this.resetMap = this.resetMap.bind(this);
     this.pause = this.pause.bind(this);
+    this.setNextFrame = this.setNextFrame.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
 
     this.state = {
       map: map,
       lines: lines,
-      pause: false
+      pause: true,
+      nextFrame: false
     };
   }
 
@@ -127,7 +131,8 @@ export default class World extends Component {
   }
 
   tick() {
-    if (this.state.pause) return;
+    if (this.state.pause && !this.state.nextFrame) return;
+    this.setNextFrame(false);
 
     this.setState((prevState) => ({
       map: this.generateMap(prevState.map)
@@ -148,12 +153,31 @@ export default class World extends Component {
     return this.state.pause ? 'fa-play' : 'fa-pause';
   }
 
+  setNextFrame(nextFrame) {
+    if (nextFrame === undefined) nextFrame = true;
+    this.setState({ nextFrame: nextFrame });
+  }
+
   componentDidMount() {
+    $(document.body).on('keydown', this.handleKeyDown);
     this.interval = setInterval(() => this.tick(), this.props.period);
   }
 
   componentWillUnmount() {
+    $(document.body).off('keydown', this.handleKeyDown);
     clearInterval(this.interval);
+  }
+
+  handleKeyDown(event) {
+    if (event.keyCode === 32 /* space */) {
+      this.pause();
+    }
+    else if (event.keyCode === 37 /* left */) {
+      this.resetMap();
+    }
+    else if (event.keyCode === 39 /* left */) {
+      this.setNextFrame();
+    }
   }
 
   render() {
@@ -162,8 +186,9 @@ export default class World extends Component {
         <div className='World'>{ this.state.lines }</div>
         <br/>
         <div className='Buttons'>
-          <a href='#' className="fa fa-step-backward" onClick={ this.resetMap } ></a>
+          <a href='#' className='fa fa-step-backward' onClick={ this.resetMap } ></a>
           <a href='#' className={'fa ' + this.pauseIcon() } onClick={ this.pause } ></a>
+          <a href='#' className='fa fa-step-forward' onClick={ this.setNextFrame } ></a>
         </div>
       </div>
     );
