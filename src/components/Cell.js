@@ -6,6 +6,6 @@ export default class Cell extends Component {
   }
 
   render() {
-    return <div className={'Cell ' + this.getColor()} onClick={ this.handleClick }></div>
+    return <div className={'Cell ' + this.getColor()} onClick={() => this.props.toggleState()}></div>
   };
 }

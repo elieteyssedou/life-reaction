@@ -141,7 +141,7 @@ export default class World extends Component {
     var tab = [];
 
     for(var i=0; i < this.getSize(); i++) {
-      let line = <Line key={i} cells={ map[i] } />;
+      let line = <Line key={i} cells={ map[i] } toggleCellState={(cI) => { map[i][cI] = !map[i][cI] }} />;
       tab.push(line);
     }
 

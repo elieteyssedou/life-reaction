@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <World size={ 40 } period={ 100 } rand={ 5 } />
+        <World size={ 40 } period={ 100 } rand={ 5000 } />
       </div>
     );
   }

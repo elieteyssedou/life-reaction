@@ -5,7 +5,7 @@ export default class Line extends Component {
   generateCells() {
     return this.props.cells.map(
       (cell, i) => {
-        return <Cell key={i} state={ cell } />;
+        return <Cell key={i} state={ cell } toggleState={() => { this.props.toggleCellState(i) }} />;
       }
     );
   }
